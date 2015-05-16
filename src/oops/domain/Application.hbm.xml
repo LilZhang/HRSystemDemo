@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-16 10:27:09 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="oops.domain.Application" table="APPLICATION_TABLE">
+        <cache usage="read-write"/>
+        <id name="id" type="java.lang.Integer">
+            <column name="APPLICATION_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="reason" type="java.lang.String" length="50">
+            <column name="APPLICATION_REASON" />
+        </property>
+        <property name="result" type="boolean">
+            <column name="APPLICATION_RESULT" />
+        </property>
+        <many-to-one name="attend" class="oops.domain.Attend" lazy="false">
+            <column name="ATTEND_ID" />
+        </many-to-one>
+        <many-to-one name="type" class="oops.domain.AttendType" lazy="false">
+            <column name="TYPE_ID" />
+        </many-to-one>
+        <one-to-one name="check" class="oops.domain.CheckBack" property-ref="app"></one-to-one>
+    </class>
+</hibernate-mapping>

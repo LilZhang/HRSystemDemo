@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-16 10:27:09 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="oops.domain.AttendType" table="ATTENDTYPE_TABLE">
+    	<cache usage="read-only"/>
+        <id name="id" type="java.lang.Integer">
+            <column name="TYPE_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="java.lang.String" not-null="true" length="50">
+            <column name="TYPE_NAME" />
+        </property>
+        <property name="amerce" type="double" not-null="true">
+            <column name="TYPE_AMERCE" />
+        </property>
+    </class>
+</hibernate-mapping>

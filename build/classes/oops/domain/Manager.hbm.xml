@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-16 10:27:09 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <joined-subclass name="oops.domain.Manager" extends="oops.domain.Employee" table="MANAGER" lazy="false">
+        <key>
+            <column name="ID" />
+        </key>
+        <property name="id" type="java.lang.Long">
+            <column name="ID" />
+        </property>
+        <property name="dept" type="java.lang.String">
+            <column name="DEPT" />
+        </property>
+        <set name="employees" table="EMPLOYEE" inverse="false" lazy="true">
+            <key>
+                <column name="SERIALVERSIONUID" />
+            </key>
+            <one-to-many class="oops.domain.Employee" />
+        </set>
+        <set name="checks" table="CHECKBACK" inverse="false" lazy="true">
+            <key>
+                <column name="SERIALVERSIONUID" />
+            </key>
+            <one-to-many class="oops.domain.CheckBack" />
+        </set>
+    </joined-subclass>
+</hibernate-mapping>

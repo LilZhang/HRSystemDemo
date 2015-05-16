@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-16 10:27:09 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+ <class discriminator-value="1" name="oops.domain.Employee" table="EMPLOYEE_TABLE">
+  <cache usage="read-write"/>
+  <id name="id" type="java.lang.Integer">
+   <column name="EMPLOYEE_ID"/>
+   <generator class="identity"/>
+  </id>
+  <discriminator column="EMPLOYEE_TYPE" force="false" insert="true"
+   not-null="true" type="int"/>
+  <property lazy="false" length="50" name="name"
+   not-null="true" type="java.lang.String" unique="true">
+   <column name="EMPLOYEE_NAME"/>
+  </property>
+  <property lazy="false" length="50" name="pass"
+   not-null="true" type="java.lang.String">
+   <column name="EMPLOYEE_PASS"/>
+  </property>
+  <property lazy="false" name="salary" not-null="true" type="double">
+   <column name="EMPLOYEE_SALARY"/>
+  </property>
+  <many-to-one class="oops.domain.Manager" lazy="false" name="manager">
+   <column name="MANAGER_ID"/>
+  </many-to-one>
+  <set inverse="true" lazy="true" name="attends" sort="unsorted" table="ATTEND">
+   <key>
+    <column name="EMPLOYEE_ID"/>
+   </key>
+   <one-to-many class="oops.domain.Attend"/>
+  </set>
+  <set inverse="true" lazy="false" name="payments" sort="unsorted" table="PAYMENT">
+   <key>
+    <column name="EMPLOYEE_ID"/>
+   </key>
+   <one-to-many class="oops.domain.Payment"/>
+  </set>
+ </class>
+ <subclass name="oops.domain.Manager" discriminator-value="2">
+ 	<property name="dept" column="dept_name" type="String" length="50"/>
+ 	<set name="employees" inverse="true">
+ 		<key column="MANAGER_ID"/>
+ 		<one-to-many class="oops.domain.Employee"/>
+ 	</set>
+ 	<set name="checks" inverse="true">
+ 		<key column="MANAGER_ID"/>
+ 		<one-to-many class="CheckBack"/>
+ 	</set>
+ </subclass>
+</hibernate-mapping>
