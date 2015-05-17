@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<bean id="daoTemplate" abstract="true" lazy-init="true"
+		p:sessionFactory-ref="sessionFactory"/>
+
+	<bean id="employeeDao"
+		class="oops.dao.impl.EmployeeDaoHibernate"
+		parent="daoTemplate"/>
+
+	<bean id="managerDao"
+		class="oops.dao.impl.ManagerDaoHibernate"
+		parent="daoTemplate"/>
+
+	<bean id="attendDao"
+		class="oops.dao.impl.AttendDaoHibernate"
+		parent="daoTemplate"/>
+
+	<bean id="attendTypeDao"
+		class="oops.dao.impl.AttendTypeDaoHibernate"
+		parent="daoTemplate"/>
+
+	<bean id="appDao"
+		class="oops.dao.impl.ApplicationDaoHibernate"
+		parent="daoTemplate"/>
+
+	<bean id="checkDao"
+		class="oops.dao.impl.CheckBackDaoHibernate"
+		parent="daoTemplate"/>
+
+	<bean id="payDao"
+		class="oops.dao.impl.PaymentDaoHibernate"
+		parent="daoTemplate"/>
+
+</beans>
