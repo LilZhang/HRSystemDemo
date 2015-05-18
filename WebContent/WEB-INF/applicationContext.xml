@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="GBK"?>
-<!-- Spring配置文件的根元素，使用spring-beans-3.0.xsd语义约束 -->
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<!-- 指定Spring配置文件的Schema信息 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 	
 	
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" >
@@ -33,9 +40,97 @@
 				hibernate.dialect=org.hibernate.dialect.MySQLInnoDBDialect
 				hibernate.hbm2dll=update
 				hibernate.show_sql=true
-				hibernate.format_sql=true;
+				hibernate.format_sql=true
+				hibernate.cache.use_second_level_cache=true
+				hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 			</value>
 		</property>
 	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+		p:sessionFactory-ref="sessionFactory"/>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		
+		<tx:attributes>
+			
+			<tx:method name="get*" read-only="true"/>
+			
+			<tx:method name="*"/>
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		
+		<aop:pointcut id="leePointcut"
+			expression="bean(empManager)||bean(mgrManager)"/>
+		
+		<aop:advisor advice-ref="txAdvice" 
+			pointcut-ref="leePointcut"/>
+	</aop:config>
+	
+	<bean id="managerTemplate" abstract="true" lazy-init="true"
+		p:appDao-ref="appDao"
+		p:attendDao-ref="attendDao"
+		p:typeDao-ref="attendTypeDao"
+		p:checkDao-ref="checkDao"
+		p:empDao-ref="employeeDao"
+		p:mgrDao-ref="managerDao"
+		p:payDao-ref="payDao"/>
+		
+	<bean id="empManager" class="oops.service.impl.EmpManagerImpl" parent="managerTemplate"/>
+	<bean id="mgrManager" class="oops.service.impl.MgrManagerImpl" parent="managerTemplate"/>
+	
+	<bean id="cronTriggerPay" 
+	class="org.springframework.scheduling.quartz.CronTriggerBean">
+	<property name="jobDetail">
+		
+		<bean 
+		class="org.springframework.scheduling.quartz.JobDetailBean">
+		
+			<property name="jobClass"
+				value="oops.schedule.PayJob"/>
+			
+			<property name="jobDataAsMap">
+				<map>
+					<entry key="empMgr" value-ref="empManager"/>
+				</map>
+			</property>
+		</bean>
+	</property>
+	
+	<property name="cronExpression" value="0 0 2 3 * ? *"/>
+</bean>
+
+
+<bean id="cronTriggerPunch" 
+	class="org.springframework.scheduling.quartz.CronTriggerBean">
+	<property name="jobDetail">
+		
+		<bean
+		class="org.springframework.scheduling.quartz.JobDetailBean">
+			
+			<property name="jobClass" 
+				value="oops.schedule.PunchJob"/>
+			
+			<property name="jobDataAsMap">
+				<map>
+					<entry key="empMgr" value-ref="empManager"/>
+				</map>
+			</property>
+		</bean>
+	</property>
+	
+	<property name="cronExpression" 
+		value="0 0 7,12 ? * MON-FRI"/>
+</bean>
+
+<bean 
+class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<property name="triggers">
+		<list>
+			<ref local="cronTriggerPay"/>
+			<ref local="cronTriggerPunch"/>
+		</list>
+	</property>
+</bean>
 	
 </beans>
