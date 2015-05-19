@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+	"http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>	
+	<constant name="struts.custom.i18n.resources" value="mess"/>	
+	<constant name="struts.i18n.encoding" value="GBK"/>	
+	<constant name="struts.devMode" value="true"/>
+	
+	<package name="default" extends="struts-default">
+		<interceptors>
+			<interceptor name="empAuth" class="oops.authority.EmpAuthorityInterceptor"/>
+			<interceptor name="mgrAuth" class="oops.authority.MgrAuthorityInterceptor"/>
+			<interceptor-stack name="empStack">
+				<interceptor-ref name="defaultStack"/>
+				<interceptor-ref name="empAuth"/>
+			</interceptor-stack>
+			<interceptor-stack name="mgrStack">
+				<interceptor-ref name="defaultStack"/>
+				<interceptor-ref name="mgrAuth"/>
+			</interceptor-stack>
+		</interceptors>
+		
+		<action name="processLogin" class="oops.action.LoginAction">
+			<result name="input">/WEB-INF/content/login.jsp</result>
+			<result name="mgr">/WEB-INF/content/manager/index.jsp</result>
+			<result name="emp">/WEB-INF/content/employee/index.jsp</result>
+			<result name="error">/WEB-INF/content/login.jsp</result>
+		</action>
+		
+		<action name="*Punch" class="oops.action.PunchAction">
+			<interceptor-ref name="empStack"/>
+			<result>/WEB-INF/content/{1}/punch.jsp</result>
+		</action>
+		
+		<action name="*Come" method="come" class="oops.action.ProcessPunchAction">
+			<interceptor-ref name="empStack"/>
+			<result>/WEB-INF/content/{1}/index.jsp</result>
+		</action>
+		
+		<action name="*Leave"  method="leave" class="oops.action.ProcessPunchAction">
+			<interceptor-ref name="empStack"/>
+			<result>/WEB-INF/content/{1}/index.jsp</result>
+ 	   </action>
+ 	   
+ 	   <action name="appChange" class="oops.action.AppChangeAction">
+			<interceptor-ref name="store">
+				<param name="operationMode">RETRIEVE</param>
+			</interceptor-ref>
+			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="empAuth"/>
+			<result>/WEB-INF/content/employee/appChange.jsp</result>
+		</action>
+		
+		<action name="processApp" class="oops.action.ProcessAppAction">
+			<interceptor-ref name="store">
+				<param name="operationMode">STORE</param>
+			</interceptor-ref>
+			<interceptor-ref name="empStack"/>
+			<result name="input" type="redirect">/appChange.action?attid=${attId}</result>
+			<result>/WEB-INF/content/employee/index.jsp</result>
+		</action>
+		
+		<action name="addEmp">
+			<interceptor-ref name="mgrStack"/>
+			<result>/WEB-INF/content/manager/addEmp.jsp</result>
+		</action>
+		
+		<action name="processAdd" 
+			class="oops.action.AddEmpAction">
+			<interceptor-ref name="mgrStack"/>
+			<interceptor-ref name="token"/>
+			<result name="invalid.token">/WEB-INF/content/manager/addEmp.jsp</result>
+			<result name="input">/WEB-INF/content/manager/addEmp.jsp</result>
+			<result name="failure">/WEB-INF/content/manager/addEmp.jsp</result>
+			<result>/WEB-INF/content/manager/index.jsp</result>
+		</action>
+		
+		<action name="check"
+			class="oops.action.CheckAppAction">
+			<interceptor-ref name="mgrStack"/>
+			<result type="chain">viewApp</result>
+		</action>
+		
+		<action name="logout" 
+			class="oops.action.LogoutAction">
+			<result>/WEB-INF/content/main.jsp</result>
+		</action>
+		
+		<action name="viewApp"
+			class="oops.action.ViewAppAction">
+			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="mgrAuth"/>
+			<result>/WEB-INF/content/manager/viewApps.jsp</result>
+		</action>
+		
+		<action name="viewDeptSal"
+			class="oops.action.ViewDeptAction">
+			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="mgrAuth"/>
+			<result>/WEB-INF/content/manager/viewDeptSal.jsp</result>
+		</action>
+		
+		<action name="viewEmp"
+			class="oops.action.ViewEmpAction">
+			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="mgrAuth"/>
+			<result>/WEB-INF/content/manager/viewEmp.jsp</result>
+		</action>
+		
+		<action name="view*Salary"
+			class="oops.action.ViewSalaryAction">
+			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="empAuth"/>
+			<result>/WEB-INF/content/{1}/viewSalary.jsp</result>
+		 </action>
+		 
+		 <action name="viewUnPunch" 
+			class="oops.action.ViewUnAttendAction">
+			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="empAuth"/>
+			<result>/WEB-INF/content/employee/viewUnAttend.jsp</result>
+		</action>
+	</package>
+</struts>
